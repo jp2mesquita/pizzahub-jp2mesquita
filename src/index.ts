@@ -1,9 +1,10 @@
 import express from 'express';
 import mongoose from 'mongoose';
+require('dotenv/config');
 
+const MONGODB_SECRET_CONECTION_KEY = process.env.MONGODB_SECRET_CONECTION_KEY as string;
 
-
-mongoose.connect('mongodb+srv://jpmesquita:Chocolate22*@cluster0.cpyz48o.mongodb.net/test')
+mongoose.connect(MONGODB_SECRET_CONECTION_KEY)
   .then(() => {
     const app = express();
     const port = 3333;
