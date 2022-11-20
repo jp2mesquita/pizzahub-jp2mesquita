@@ -1,22 +1,47 @@
+import { useState } from 'react';
 import { FlatList, TouchableOpacity } from 'react-native';
 import { CartItem } from '../../@types/cartItem';
+import { Product } from '../../@types/product';
 import { formatCurrency } from '../../utils/formatCurency';
 import { Button } from '../Button';
 import { MinusCircle } from '../Icons/MinusCircle';
 import { PlusCircle } from '../Icons/PlusCircle';
+import { OrderConfirmModal } from '../OrderConfirmModal';
 import { Text } from '../Text';
 import { Actions, Image, ItemContainer, ProductContainer, ProductDetails, QuantityContainer, Summary, TotalContainer } from './styles';
 
 interface CartProps{
   cartItems: CartItem[]
+  onAdd: (product: Product) => void
+  onDecrement: (product: Product) => void
+  onConfirmOrder: () => void
 }
 
-export function Cart({cartItems}: CartProps){
-
+export function Cart({cartItems, onAdd, onDecrement, onConfirmOrder}: CartProps){
+  const [isLoading] = useState(false);
   const isCartEmpty = cartItems.length < 1;
+  const [isModalVisible, setIsmodalVisible] = useState(false);
+
+  const total = cartItems.reduce((acc, cartItem) =>{
+    return acc + cartItem.quantity * cartItem.product.price;
+  }, 0);
+
+  function handleConfirmOrder(){
+    setIsmodalVisible(true);
+  }
+
+  function handleOk(){
+    onConfirmOrder();
+    setIsmodalVisible(false);
+  }
 
   return(
     <>
+      <OrderConfirmModal
+        visible={isModalVisible}
+        onOk={handleOk}
+      />
+
       {!isCartEmpty && (
         <FlatList
           style={{marginBottom: 20, maxHeight: 150}}
@@ -45,11 +70,14 @@ export function Cart({cartItems}: CartProps){
               </ProductContainer>
 
               <Actions>
-                <TouchableOpacity style={{marginRight: 24}}>
+                <TouchableOpacity
+                  style={{marginRight: 24}}
+                  onPress={() => onAdd(cartItem.product)}
+                >
                   <PlusCircle />
                 </TouchableOpacity>
 
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => onDecrement(cartItem.product)}>
                   <MinusCircle />
                 </TouchableOpacity>
               </Actions>
@@ -71,15 +99,16 @@ export function Cart({cartItems}: CartProps){
             : (
               <>
                 <Text color='#666'>Total</Text>
-                <Text size={20} weight="600">{formatCurrency(120)}</Text>
+                <Text size={20} weight="600">{formatCurrency(total)}</Text>
               </>
             )
           }
         </TotalContainer>
 
         <Button
-          onPress={() => alert('Pedido confirmado!')}
+          onPress={handleConfirmOrder}
           disable={isCartEmpty}
+          loading={isLoading}
         >
           Confirmar Pedido
         </Button>
