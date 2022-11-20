@@ -22,7 +22,6 @@ export function Main(){
   const [products, setProducts ] = useState<Product[]>(mockProducts);
 
   function handleSaveTable(table:string){
-    alert(`main: ${table}`);
     setSelectedTable(table);
   }
 
