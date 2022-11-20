@@ -1,8 +1,11 @@
 
 import { useState } from 'react';
-import { Order } from '../../@types/Order';
+import { toast } from 'react-toastify';
 import { api } from '../../utils/api';
+
+import { Order } from '../../@types/Order';
 import { OrderModal } from '../OrderModal';
+
 import { Board, OrdersContainer } from './styles';
 
 interface OrdersBoardProps{
@@ -36,6 +39,7 @@ export function OrdersBoard({icon, title, orders, onCancelOrder} : OrdersBoardPr
     await new Promise(resolve => setTimeout(resolve, 3000));
     await api.delete(`/orders/${selectedOrder?._id}`);
 
+    toast.success(`O pedido da  mesa ${selectedOrder?.table} foi cancelado!`);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     onCancelOrder(selectedOrder!._id);
     setIsLoading(false);
