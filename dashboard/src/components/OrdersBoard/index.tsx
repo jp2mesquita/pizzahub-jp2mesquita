@@ -13,11 +13,12 @@ interface OrdersBoardProps{
   title: string,
   orders: Order[]
   onCancelOrder: (orderId: string) => void
+  onChangeOrderStatus: (orderId: string, status: Order['status']) => void
 }
 
 
 
-export function OrdersBoard({icon, title, orders, onCancelOrder} : OrdersBoardProps){
+export function OrdersBoard({icon, title, orders, onCancelOrder, onChangeOrderStatus} : OrdersBoardProps){
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -33,10 +34,26 @@ export function OrdersBoard({icon, title, orders, onCancelOrder} : OrdersBoardPr
     setSelectedOrder(null);
   }
 
+  async function handleChangeOrderStatus(){
+    setIsLoading(true);
+
+    const status = selectedOrder?.status === 'WAITING'
+      ? 'IN_PRODUCTION'
+      : 'DONE';
+
+    await api.patch(`/orders/${selectedOrder?._id}`,  {status});
+
+    toast.success(`O pedido da  mesa ${selectedOrder?.table} teve o status  alterado!`);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    onChangeOrderStatus(selectedOrder!._id, status);
+    setIsLoading(false);
+    setIsModalOpen(false);
+  }
+
   async function handleCancelOrder(){
 
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 3000));
+
     await api.delete(`/orders/${selectedOrder?._id}`);
 
     toast.success(`O pedido da  mesa ${selectedOrder?.table} foi cancelado!`);
@@ -55,6 +72,7 @@ export function OrdersBoard({icon, title, orders, onCancelOrder} : OrdersBoardPr
         onClose={handleCloseOrderModal}
         onCancelOrder={handleCancelOrder}
         isLoading={isLoading}
+        onChangeOrderStatus={handleChangeOrderStatus}
       />
 
       <header>
