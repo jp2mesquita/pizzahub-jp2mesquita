@@ -25,6 +25,7 @@ export function Main(){
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts ] = useState<Product[]>([]);
   const [categories, setCategories ] = useState<Category[]>([]);
+  const [isLoadinProducts, setIsLoadingProducts] = useState(false);
 
 
   useEffect(() => {
@@ -45,9 +46,13 @@ export function Main(){
       ? `/categories/${categoryId}/products`
       : '/products';
 
+    setIsLoadingProducts(true);
+
     const { data } = await api.get(route);
 
+
     setProducts(data);
+    setIsLoadingProducts(false);
   }
 
   function handleSaveTable(table:string){
@@ -141,21 +146,34 @@ export function Main(){
                 />
               </CategoriesContainer>
 
-              {products.length > 0
+              {isLoadinProducts
                 ?(
-                  <MenuContainer>
-                    <Menu
-                      onAddToCart={handleAddToCart }
-                      products={products}
-                    />
-                  </MenuContainer>
-                )
-                : (
+
+
                   <CenteredContainer>
-                    <Empty/>
-                    <Text color="#666" style={{marginTop: 24}}>Nenhum produdo foi encontrado</Text>
+
+                    <ActivityIndicator
+                      color="#d73035"
+                      size="large"
+                    />
                   </CenteredContainer>
+
                 )
+                : products.length > 0
+                  ? (
+                    <MenuContainer>
+                      <Menu
+                        onAddToCart={handleAddToCart }
+                        products={products}
+                      />
+                    </MenuContainer>
+                  )
+                  : (
+                    <CenteredContainer>
+                      <Empty/>
+                      <Text color="#666" style={{marginTop: 24}}>Nenhum produdo foi encontrado</Text>
+                    </CenteredContainer>
+                  )
 
               }
             </>
