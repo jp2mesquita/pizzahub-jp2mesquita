@@ -39,6 +39,17 @@ export function Main(){
 
   }, []);
 
+  async function handleSelectedCategory(categoryId: string){
+
+    const route = categoryId
+      ? `/categories/${categoryId}/products`
+      : '/products';
+
+    const { data } = await api.get(route);
+
+    setProducts(data);
+  }
+
   function handleSaveTable(table:string){
     setSelectedTable(table);
   }
@@ -47,9 +58,6 @@ export function Main(){
     setSelectedTable('');
     setCartItems([]);
   }
-
-
-
 
   function handleAddToCart(product: Product){
     if(!selectedTable){
@@ -119,7 +127,7 @@ export function Main(){
             <CenteredContainer>
 
               <ActivityIndicator
-                color="#d730335"
+                color="#d73035"
                 size="large"
               />
             </CenteredContainer>
@@ -129,6 +137,7 @@ export function Main(){
               <CategoriesContainer>
                 <Categories
                   categories={categories}
+                  onSelectCategory={handleSelectedCategory}
                 />
               </CategoriesContainer>
 
