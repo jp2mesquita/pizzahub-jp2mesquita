@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
+
+import { api } from '../utils/api';
+
 import { CartItem } from '../@types/cartItem';
 import { Product } from '../@types/product';
+import { Category } from '../@types/category';
+
 import { Button } from '../components/Button';
 import { Cart } from '../components/Cart';
 import { Categories } from '../components/Categories';
 import { Header } from '../components/Header';
 import { Menu } from '../components/Menu';
 import { TableModal } from '../components/TableModal';
-import { CategoriesContainer, CenteredContainer, Container, Footer, FooterContainer, MenuContainer } from './styles';
-import axios from 'axios';
-
-// import { products as mockProducts} from '../mocks/products';
-// import { categories as mockCategories} from '../mocks/categories';
-
 import { Empty } from '../components/Icons/Empty';
 import { Text } from '../components/Text';
-import { Category } from '../@types/category';
+
+import { CategoriesContainer, CenteredContainer, Container, Footer, FooterContainer, MenuContainer } from './styles';
 
 export function Main(){
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
@@ -29,8 +29,8 @@ export function Main(){
 
   useEffect(() => {
     Promise.all([
-      axios.get('http://192.168.1.5:3333/categories'),
-      axios.get('http://192.168.1.5:3333/products')
+      api.get('/categories'),
+      api.get('/products')
     ]).then(([categoriesResponse, productsReponse]) => {
       setCategories(categoriesResponse.data);
       setProducts(productsReponse.data);
